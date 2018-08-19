@@ -1,7 +1,7 @@
 #! /bin/bash
 # httpd root is /home/www
 
-function install_3()
+function install_httpd_php7()
 {
 	yum -y install httpd
 	rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
@@ -19,7 +19,7 @@ function install_3()
 function install_1()
 {
 	yum install -y wget
-	install_3
+	install_httpd_php7
 	cd ~
 	wget https://files.phpmyadmin.net/phpMyAdmin/4.8.2/phpMyAdmin-4.8.2-all-languages.tar.gz
 	tar xzvf phpMyAdmin-4.8.2-all-languages.tar.gz
