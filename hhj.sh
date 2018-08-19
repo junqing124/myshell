@@ -1,5 +1,6 @@
 #! /bin/bash
 # httpd root is /home/www
+
 function install_3()
 {
 	yum -y install httpd
@@ -18,29 +19,77 @@ function install_3()
 function install_1()
 {
 	yum install -y wget
+	install_3
 	cd ~
 	wget https://files.phpmyadmin.net/phpMyAdmin/4.8.2/phpMyAdmin-4.8.2-all-languages.tar.gz
 	tar xzvf phpMyAdmin-4.8.2-all-languages.tar.gz
 	mv phpMyAdmin-4.8.2-all-languages /home/www/phpdb
 	cp /home/www/phpdb/config.sample.inc.php /home/www/phpdb/config.inc.php
-	read -p "Type you mysql's address: 
+	read -p "Type you mysql's address(default:localhost): 
 	" mysql_ip	
-	sed -i 's#'localhost'#'${mysql_ip}'#g' /home/www/phpdb/config.inc.php
+	if [ ! $mysql_ip ]; then
+		#use localhost
+		sed -i 's#'localhost'#'localhost'#g' /home/www/phpdb/config.inc.php
+	else
+		sed -i 's#'localhost'#'${mysql_ip}'#g' /home/www/phpdb/config.inc.php
+	fi 
 	chown apache: /home/www -R
 	echo "It's ok,phpmyadmin is:http://ip/phpdb"
+}
+function install_2()
+{
+	rpm -ivh http://repo.zabbix.com/zabbix/2.4/rhel/7/x86_64/zabbix-release-2.4-1.el7.noarch.rpm
+	yum install zabbix-agent -y	
+	read -p "Type you zabbix's server address: 
+	" zabbix_ip
+	sed -i "s#Server=127.0.0.1#Server=${zabbix_ip}#g" /etc/zabbix/zabbix_agentd.conf
+	sed -i "s#ServerActive=127.0.0.1#ServerActive=${zabbix_ip}#g" /etc/zabbix/zabbix_agentd.conf
+	systemctl enable zabbix-agent
+	service zabbix-agent start
+	systemctl enable zabbix-agent
+}
+
+function install_3()
+{
+	check_zabbix_rpm=`rpm -qa zabbix-agent`
+	if [ -z $check_zabbix_rpm ];then
+		install_2
+	else
+		echo "Start install zabbix mysql";
+	fi
+	
+	#install zabbix mysql
+	yum install -y https://www.percona.com/downloads/percona-monitoring-plugins/1.1.6/percona-zabbix-templates-1.1.6-1.noarch.rpm
+	yum install percona-zabbix-templates -y
+	cp /var/lib/zabbix/percona/templates/userparameter_percona_mysql.conf /etc/zabbix/zabbix_agentd.d/userparameter_percona_mysql.conf
+	read -p "Type you mysql's address: 
+		" mysql_host
+	read -p "Type you mysql's username: 
+		" mysql_user
+	read -p "Type you mysql's password: 
+		" mysql_password
+	echo "<?php
+				\$mysql_user = '${mysql_user}';
+				\$mysql_pass = '${mysql_password}';">/var/lib/zabbix/percona/scripts/ss_get_mysql_stats.php.cnf
+	echo "[client]
+				user = ${mysql_user}
+				password = ${mysql_password}">/var/lib/zabbix/.my.cnf
+	sed -i "s#HOST=localhost#HOST=${mysql_host}#g" /var/lib/zabbix/percona/scripts/get_mysql_stats_wrapper.sh
+	service zabbix-agent restart
+	echo "I's OK"
 }
 
 setenforce 0
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 read -p "Select install: 
-1.phpmyadmin4.8.2
-2.zabbix
-3.php7+httpd:
+1.phpmyadmin4.8.2+php7+httpd
+2.zabbix2.4
+3.zabbix2.4+zabbix2.4_mysql:
 " select_id
 if [[ $select_id == 1 ]]; then
 	install_1
 elif [[ $select_id == 2 ]]; then
-	echo "select 2"
+	install_2
 elif [[ $select_id == 3 ]]; then
 	install_3
 else
