@@ -44,6 +44,8 @@ function install_2()
 	" zabbix_ip
 	sed -i "s#Server=127.0.0.1#Server=${zabbix_ip}#g" /etc/zabbix/zabbix_agentd.conf
 	sed -i "s#ServerActive=127.0.0.1#ServerActive=${zabbix_ip}#g" /etc/zabbix/zabbix_agentd.conf
+	firewall-cmd --zone=public --add-port=10050/tcp --permanent
+	firewall-cmd --reload
 	systemctl enable zabbix-agent
 	service zabbix-agent start
 	systemctl enable zabbix-agent
