@@ -80,13 +80,31 @@ function install_3()
 	service zabbix-agent restart
 	echo "I's OK"
 }
+function install_4()
+{
+	yum install ntp ntpdate -y
+	echo "20 */1 * * * /usr/sbin/ntpdate -u cn.pool.ntp.org" >> /var/spool/cron/root
+	/usr/sbin/ntpdate -u cn.pool.ntp.org
+	systemctl enable ntpd.service
+	systemctl start ntpd
+	firewall-cmd --add-service=ntp --permanent
+	firewall-cmd --reload
+	echo "server ntp.sjtu.edu.cn" >> /etc/ntp.conf
+	echo "server 127.127.1.0 fudge" >> /etc/ntp.conf
+	echo "127.127.1.0 stratum 8" >> /etc/ntp.conf
+	sed -i "s/restrict default nomodify notrap nopeer noquery/restrict default nomodify/g" /etc/ntp.conf
+	sed -i "s/restrict 127.0.0.1/#restrict 127.0.0.1/g" /etc/ntp.conf
+	sed -i "s/restrict ::1/#restrict ::1/g" /etc/ntp.conf
+	echo "I's ok"
+}
 
 setenforce 0
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 read -p "Select install: 
 1.phpmyadmin4.8.2+php7+httpd
 2.zabbix2.4
-3.zabbix2.4+zabbix2.4_mysql:
+3.zabbix2.4+zabbix2.4_mysql
+4.ntp server:
 " select_id
 if [[ $select_id == 1 ]]; then
 	install_1
@@ -94,6 +112,8 @@ elif [[ $select_id == 2 ]]; then
 	install_2
 elif [[ $select_id == 3 ]]; then
 	install_3
+elif [[ $select_id == 4 ]]; then
+	install_4
 else
 	echo "Invalid select id"
 	exit
