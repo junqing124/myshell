@@ -76,8 +76,9 @@ function install_3()
 				\$mysql_user = '${mysql_user}';
 				\$mysql_pass = '${mysql_password}';">/var/lib/zabbix/percona/scripts/ss_get_mysql_stats.php.cnf
 	echo "[client]
-				user = ${mysql_user}
-				password = ${mysql_password}">/var/lib/zabbix/.my.cnf
+			host = ${mysql_host}
+			user = ${mysql_user}
+			password = ${mysql_password}">/var/lib/zabbix/.my.cnf
 	sed -i "s#HOST=localhost#HOST=${mysql_host}#g" /var/lib/zabbix/percona/scripts/get_mysql_stats_wrapper.sh
 	service zabbix-agent restart
 	echo "I's OK"
