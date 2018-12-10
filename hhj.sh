@@ -145,6 +145,8 @@ elif [[ $select_id == 4 ]]; then
 	install_4
 elif [[ $select_id == 5 ]]; then
 	install_5
+elif [[ $select_id == 6 ]]; then
+	install_httpd_php7
 else
 	echo "Invalid select id"
 	exit
