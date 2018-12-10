@@ -131,7 +131,7 @@ sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 read -p "Select install: 
 1.phpmyadmin4.8.2+php7+httpd
 2.zabbix2.4
-3.zabbix2.4+zabbix2.4_mysql
+3.zabbix2.4+percona-zabbix-mysql
 4.ntp server
 5.mysql8.0.12:
 " select_id
