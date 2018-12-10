@@ -133,7 +133,8 @@ read -p "Select install:
 2.zabbix2.4
 3.zabbix2.4+percona-zabbix-mysql
 4.ntp server
-5.mysql8.0.12:
+5.mysql8.0.12
+6.php7.0 only:
 " select_id
 if [[ $select_id == 1 ]]; then
 	install_1
