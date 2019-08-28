@@ -6,7 +6,8 @@ function install_httpd_php7()
 	yum -y install httpd
 	rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 	rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
-	yum -y install php70w php70w-mysql p70w-pdo php70w-gd php70w-ldap php70w-odbc php70w-pear.noarch php70w-xml php70w-xmlrpc php70w-mbstring php70w-snmp php70w-soap php70w-mcrypt curl curl-devel
+	yum -y install php${1}w php${1}w-mysql p${1}w-pdo php${1}w-gd php${1}w-ldap php${1}w-odbc php${1}w-pear.noarch php${1}w-xml php${1}w-xmlrpc php${1}w-mbstring php${1}w-snmp php${1}w-soap php${1}w-mcrypt 
+	yum -y install curl curl-devel
 	mkdir /home/www
 	chown apache: /home/www
 	sed -i 's#DocumentRoot "/var/www/html"#DocumentRoot "/home/www"#g' /etc/httpd/conf/httpd.conf
@@ -19,7 +20,7 @@ function install_httpd_php7()
 function install_1()
 {
 	yum install -y wget
-	install_httpd_php7
+	install_httpd_php7 $1
 	cd ~
 	wget https://files.phpmyadmin.net/phpMyAdmin/4.8.2/phpMyAdmin-4.8.2-all-languages.tar.gz
 	tar xzvf phpMyAdmin-4.8.2-all-languages.tar.gz
@@ -129,15 +130,18 @@ function install_5()
 setenforce 0
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 read -p "Select install: 
-1.phpmyadmin4.8.2+php7+httpd
+1.phpmyadmin4.8.2+php7.0+httpd
 2.zabbix2.4
 3.zabbix2.4+percona-zabbix-mysql
 4.ntp server
 5.mysql8.0.12
-6.php7.0 only:
+6.php7.0 only
+7.phpmyadmin4.8.2+php7.1+httpd
+8.phpmyadmin4.8.2+php7.2+httpd
+9.phpmyadmin4.8.2+php7.3+httpd:
 " select_id
 if [[ $select_id == 1 ]]; then
-	install_1
+	install_1 70
 elif [[ $select_id == 2 ]]; then
 	install_2
 elif [[ $select_id == 3 ]]; then
@@ -148,6 +152,12 @@ elif [[ $select_id == 5 ]]; then
 	install_5
 elif [[ $select_id == 6 ]]; then
 	install_httpd_php7
+elif [[ $select_id == 7 ]]; then
+	install_7 71
+elif [[ $select_id == 8 ]]; then
+	install_8 72
+elif [[ $select_id == 9 ]]; then
+	install_9 73
 else
 	echo "Invalid select id"
 	exit
