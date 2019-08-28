@@ -153,11 +153,11 @@ elif [[ $select_id == 5 ]]; then
 elif [[ $select_id == 6 ]]; then
 	install_httpd_php7
 elif [[ $select_id == 7 ]]; then
-	install_7 71
+	install_1 71
 elif [[ $select_id == 8 ]]; then
-	install_8 72
+	install_1 72
 elif [[ $select_id == 9 ]]; then
-	install_9 73
+	install_1 73
 else
 	echo "Invalid select id"
 	exit
