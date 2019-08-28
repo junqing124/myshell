@@ -5,8 +5,8 @@ function install_httpd_php7()
 {
 	yum -y install httpd
 	rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-	rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
-	yum -y install php${1}w php${1}w-mysql p${1}w-pdo php${1}w-gd php${1}w-ldap php${1}w-odbc php${1}w-pear.noarch php${1}w-xml php${1}w-xmlrpc php${1}w-mbstring php${1}w-snmp php${1}w-soap php${1}w-mcrypt 
+	sudo rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+	yum --enablerepo=remi-php${1} install php php-mysql php-pdo php-gd php-ldap php-odbc php-pear.noarch php-xml php-xmlrpc php-mbstring php-snmp php-soap php-mcrypt 
 	yum -y install curl curl-devel
 	mkdir /home/www
 	chown apache: /home/www
